@@ -147,16 +147,60 @@ export class PageMetadata {
             },
         };
 
-        // Add the current day if present.
-        if (this.day) result.file.day = this.day;
+    //console.log("Serialize");
+    // Add the current day if present.
+    if (this.day)
+      result.file.day = this.day;
+    // Then append the computed fields.
+    let entriesArr = this.fields.entries()
+    for (let [key, value] of entriesArr) {
+      const valtest = JSON.parse(JSON.stringify(value));
 
-        // Then append the computed fields.
-        for (let [key, value] of this.fields.entries()) {
-            if (key in result) continue; // Don't allow fields to override existing keys.
-            result[key] = value;
+      if (key == undefined || valtest == undefined) continue;
+      let isArray = Array.isArray(result[key]);
+      const elementOfVal = Array.isArray(valtest) ? valtest[0] : valtest; //Not good way to do this
+
+      if (key != "file" && key in result) {
+        if (isArray && result[key].includes(elementOfVal)) {   // If results[key] contains any element of valtest, that means it is a repeat occurance and should be skipped
+          continue;
         }
+        result[key] = isArray ? (
+          result[key].push(...(Array.isArray(valtest) ? valtest : [valtest])), result[key]
+        ) : [valtest, result[key]];
+        continue;
+      }
+      if (key.includes(",") && !key.includes("file") && !key.includes("span")) {
+        let keyArray = key.split(',');
 
-        return result;
+        for (let keyInc of keyArray) {
+
+          keyInc = keyInc.trim();
+          let isArray = Array.isArray(result[keyInc]);
+          const elementOfVal = Array.isArray(valtest) ? valtest[0] : valtest;
+
+          if (keyInc != "file" && keyInc in result) {
+            if (isArray && result[keyInc].includes(elementOfVal)) {
+              continue;
+            }
+
+            let tempv = result[keyInc].slice();
+
+            tempv = isArray ? (
+              tempv.push(...(Array.isArray(valtest) ? valtest : [valtest])), tempv
+            ) : [valtest, tempv];
+
+            result[keyInc] = tempv;
+
+            continue;
+          }
+          result[keyInc] = valtest;
+
+        }
+        continue;
+      }
+      result[key] = valtest;
+    }
+    return result;
     }
 }
 
