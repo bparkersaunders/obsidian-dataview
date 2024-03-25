@@ -29,3 +29,28 @@ test-vault/untracked/*
 
 lib
 yarn.lock
+
+
+# Ignore
+.dockerignore
+.editorconfig
+.eslintignore
+.eslintrc
+.gitignore
+.npmrc
+Dockerfile
+README.md
+docker-compose.yml
+esbuild.config.mjs
+main.js
+main_1.ts
+main_AllowLinksInField1.ts
+main_AllowLinksInField2.ts
+manifest.json
+package.json
+rollup.config.js
+styles.css
+tsconfig.json
+version-bump.mjs
+versions.json
+node_modules
